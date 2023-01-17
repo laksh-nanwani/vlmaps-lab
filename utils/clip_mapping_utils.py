@@ -112,10 +112,22 @@ def get_id2cls(obj2cls: dict):
 
 
 def cvt_obj_id_2_cls_id(semantic: np.array, obj2cls: dict):
+    print("semantic\n",semantic)
     h, w = semantic.shape
     semantic = semantic.flatten()
+    print("semantic\n",semantic)
+    print(semantic.shape)
     u, inv = np.unique(semantic, return_inverse=True)
-    return np.array([obj2cls[x][0] for x in u])[inv].reshape((h, w))
+    # print(f"u\n{u}")
+    # print(f"inv\n{inv}")
+    # out = np.array([obj2cls[x][0] for x in u])
+    # print("out\n",out)
+    # out = out[inv]
+    # print(out)
+    # out = out.reshape((h, w))
+    # print(out)
+    out = np.array([obj2cls[x][0] for x in u])[inv].reshape((h, w))
+    return out
 
 
 def load_lseg_feat(feat_filepath):
@@ -218,6 +230,44 @@ def depth2pc(depth, fov=90):
     mask = pc[2, :] > 0.1
     return pc, mask
 
+def depth2pc_realsense(depth):
+    """
+    Return 3xN array
+    """
+
+    h, w = depth.shape
+
+    # cam_mat_inv = np.linalg.inv(cam_mat)
+    cam_mat = get_real_cam_mat(h,w)
+    cam_mat_inv = np.linalg.inv(cam_mat)
+
+    y, x = np.meshgrid(np.arange(h), np.arange(w), indexing="ij")
+
+    x = x.reshape((1, -1))[:, :]
+    y = y.reshape((1, -1))[:, :]
+    z = depth.reshape((1, -1))[:, :]
+
+    p_2d = np.vstack([x, y, np.ones_like(x)])
+    pc = cam_mat_inv @ p_2d
+    pc = pc * z
+    mask = (pc[2, :] > 0.1) & (pc[2, :] < 6.0)
+    return pc, mask
+
+def get_real_cam_mat(h,w):
+    P = np.array([641.4490966796875, 0.0, 646.7113037109375, 0.0, 0.0, 639.9080200195312, 362.441162109375, 0.0, 0.0, 0.0, 1.0, 0.0])
+    # P = P.reshape((3,4))
+    K = np.array([641.4490966796875, 0.0, 646.7113037109375, 0.0, 639.9080200195312, 362.441162109375, 0.0, 0.0, 1.0]).reshape(3,3)
+    R = np.eye(3)
+
+    D = np.array([-0.054603107273578644, 0.06334752589464188, 0.00022518340847454965, 0.0002921034465543926, -0.020296046510338783])
+    # plumb bob distortion
+
+    new_K, _ = cv2.getOptimalNewCameraMatrix(K, D, (w,h), 1, (w,h))
+    return new_K
+
+def get_original_real_cam_mat():
+    K = np.array([641.4490966796875, 0.0, 646.7113037109375, 0.0, 639.9080200195312, 362.441162109375, 0.0, 0.0, 1.0]).reshape(3,3)
+    return K
 
 def get_new_pallete(num_cls):
     n = num_cls
