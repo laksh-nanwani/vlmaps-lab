@@ -485,3 +485,13 @@ def load_obj2cls_dict(filepath):
             cls_name = row[1].split(",")[1].strip()
             obj2cls_dict[obj_id] = (cls_id, cls_name)
     return obj2cls_dict
+
+def get_color(rgb):
+    h,w = rgb.shape[:2]
+    y, x = np.meshgrid(np.arange(h), np.arange(w), indexing="ij")
+
+    x = x.reshape((-1))
+    y = y.reshape((-1))
+    colors = rgb[y,x]
+    # print(colors.shape)
+    return colors.T
