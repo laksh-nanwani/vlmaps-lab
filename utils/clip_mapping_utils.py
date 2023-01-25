@@ -112,11 +112,11 @@ def get_id2cls(obj2cls: dict):
 
 
 def cvt_obj_id_2_cls_id(semantic: np.array, obj2cls: dict):
-    print("semantic\n",semantic)
+    # print("semantic\n",semantic)
     h, w = semantic.shape
     semantic = semantic.flatten()
-    print("semantic\n",semantic)
-    print(semantic.shape)
+    # print("semantic\n",semantic)
+    # print(semantic.shape)
     u, inv = np.unique(semantic, return_inverse=True)
     # print(f"u\n{u}")
     # print(f"inv\n{inv}")
@@ -238,7 +238,7 @@ def depth2pc_realsense(depth):
     h, w = depth.shape
 
     # cam_mat_inv = np.linalg.inv(cam_mat)
-    cam_mat = get_real_cam_mat(h,w)
+    cam_mat = get_real_cam_mat((w,h), (w,h))
     cam_mat_inv = np.linalg.inv(cam_mat)
 
     y, x = np.meshgrid(np.arange(h), np.arange(w), indexing="ij")
@@ -253,7 +253,7 @@ def depth2pc_realsense(depth):
     mask = (pc[2, :] > 0.1) & (pc[2, :] < 4.0)
     return pc, mask
 
-def get_real_cam_mat(h,w):
+def get_real_cam_mat(in_dims, out_dims): # w, h
     P = np.array([641.4490966796875, 0.0, 646.7113037109375, 0.0, 0.0, 639.9080200195312, 362.441162109375, 0.0, 0.0, 0.0, 1.0, 0.0])
     # P = P.reshape((3,4))
     K = np.array([641.4490966796875, 0.0, 646.7113037109375, 0.0, 639.9080200195312, 362.441162109375, 0.0, 0.0, 1.0]).reshape(3,3)
@@ -262,7 +262,7 @@ def get_real_cam_mat(h,w):
     D = np.array([-0.054603107273578644, 0.06334752589464188, 0.00022518340847454965, 0.0002921034465543926, -0.020296046510338783])
     # plumb bob distortion
 
-    new_K, _ = cv2.getOptimalNewCameraMatrix(K, D, (w,h), 1, (w,h))
+    new_K, _ = cv2.getOptimalNewCameraMatrix(K, D, in_dims, 1, out_dims)
     return new_K
 
 def get_original_real_cam_mat():
