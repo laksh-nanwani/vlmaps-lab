@@ -1,4 +1,4 @@
-# Personal
+## Personal
 Experimented with VLMaps on real world setup in our lab at RRC
 
 # VLMaps
