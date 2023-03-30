@@ -250,7 +250,7 @@ def depth2pc_realsense(depth):
     p_2d = np.vstack([x, y, np.ones_like(x)])
     pc = cam_mat_inv @ p_2d
     pc = pc * z
-    mask = (pc[2, :] > 0.1) & (pc[2, :] < 4.0)
+    mask = (pc[2, :] > 0.2) & (pc[2, :] < 3.0)
     return pc, mask
 
 def get_real_cam_mat(in_dims, out_dims): # w, h
