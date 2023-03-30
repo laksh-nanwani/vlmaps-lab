@@ -1,3 +1,6 @@
+## Personal
+Experimented with VLMaps on real world setup in our lab at RRC
+
 # VLMaps
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1xsH9Gr_O36sBZaoPNq1SmqgOOF12spV0?usp=sharing)
